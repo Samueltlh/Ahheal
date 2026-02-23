@@ -1,0 +1,240 @@
+﻿<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Healthcare Emissions Action Lab</title>
+  
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&amp;display=swap" rel="stylesheet">
+  
+  
+  <style>
+    * { box-sizing: border-box; }
+    html, body, #app { height: 100%; width: 100%; }
+    body { font-family: 'Poppins', sans-serif; overflow: hidden; }
+    
+    .decision-card { transition: all 0.3s ease; }
+    .decision-card:hover { transform: translateY(-4px); }
+    .decision-card.selected { border-color: #10b981; background: linear-gradient(135deg, #ecfdf5, #d1fae5); }
+    
+    .carbon-bar { 
+      background: linear-gradient(90deg, #ef4444 0%, #f97316 20%, #eab308 40%, #84cc16 60%, #22c55e 100%);
+      height: 8px;
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+    .carbon-progress {
+      height: 100%;
+      background: #1e293b;
+      border-radius: 4px;
+      transition: width 0.6s ease;
+    }
+    
+    #app { display: flex; flex-direction: column; }
+    #game-content { flex: 1; overflow-y: auto; }
+  </style>
+  
+  <style>body { box-sizing: border-box; }</style>
+ </head>
+ <body class="bg-gradient-to-br from-emerald-900 via-slate-900 to-emerald-950 text-white">
+  <div id="app">
+   <!-- Welcome Screen -->
+   <div id="welcome-screen" class="w-full h-full flex flex-col items-center justify-center p-6 bg-gradient-to-br from-emerald-900 via-slate-900 to-emerald-950">
+    <div class="text-center max-w-2xl animate-in">
+     <div class="text-8xl mb-6">
+      🌍
+     </div>
+     <h1 class="text-5xl font-bold mb-3 bg-gradient-to-r from-emerald-300 to-teal-300 bg-clip-text text-transparent"><span id="welcome-title">Healthcare Emissions Action Lab</span></h1>
+     <p class="text-2xl text-emerald-300/80 mb-2"><span id="welcome-subtitle">Alexandra Hospital</span></p>
+     <p class="text-emerald-400/60 mb-8 text-lg">Net Zero by 2045</p>
+     <div class="bg-slate-800/40 rounded-2xl p-8 mb-8 border border-emerald-700/30 space-y-4">
+      <div class="flex items-center gap-4 text-left">
+       <span class="text-4xl">📊</span>
+       <div>
+        <p class="font-semibold text-emerald-300">7-Year Challenge</p>
+        <p class="text-slate-400 text-sm">Make 4 strategic decisions each year</p>
+       </div>
+      </div>
+      <div class="flex items-center gap-4 text-left">
+       <span class="text-4xl">🎯</span>
+       <div>
+        <p class="font-semibold text-emerald-300">40% Reduction Target</p>
+        <p class="text-slate-400 text-sm">From 30,000 to ≤18,000 tonnes CO₂e</p>
+       </div>
+      </div>
+      <div class="flex items-center gap-4 text-left">
+       <span class="text-4xl">⚡</span>
+       <div>
+        <p class="font-semibold text-emerald-300">Balance 6 Key Metrics</p>
+        <p class="text-slate-400 text-sm">Navigate cost, emissions, energy, satisfaction, engagement, rating</p>
+       </div>
+      </div>
+     </div><button class="px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 rounded-xl font-bold text-white shadow-lg shadow-emerald-500/25 transition-all text-lg"> Begin Challenge → Year 1 </button>
+    </div>
+   </div><!-- Game Screen -->
+   <div id="game-screen" class="hidden w-full h-full flex flex-col">
+    <!-- Header -->
+    <header class="bg-slate-900/80 backdrop-blur border-b border-emerald-700/30 p-6 flex-shrink-0">
+     <div class="max-w-7xl mx-auto">
+      <div class="flex items-center justify-between mb-4">
+       <div>
+        <h1 class="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent"><span id="game-title">Healthcare Emissions Action Lab</span></h1>
+        <p class="text-emerald-300/70"><span id="year-label">Year 1</span> - Select 4 Initiatives</p>
+       </div>
+       <div class="text-right">
+        <p class="text-sm text-slate-400">Progress</p>
+        <p class="text-2xl font-bold text-emerald-400"><span id="progress">0</span>/7 Years</p>
+       </div>
+      </div><!-- Carbon Reduction Bar -->
+      <div class="space-y-2">
+       <div class="flex justify-between items-center text-sm">
+        <span class="text-slate-400">Carbon Reduction Progress</span> <span class="font-semibold text-emerald-400"><span id="carbon-percent">0</span>% → Goal: 40%</span>
+       </div>
+       <div class="carbon-bar">
+        <div id="carbon-progress-bar" class="carbon-progress" style="width: 0%"></div>
+       </div>
+      </div>
+     </div>
+    </header><!-- Metrics Display -->
+    <div class="bg-slate-900/40 p-4 flex-shrink-0">
+     <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-6 gap-2">
+      <div class="bg-slate-800/60 rounded-lg p-3 border border-slate-700">
+       <p class="text-xs text-slate-400">Operating Cost</p>
+       <p id="metric-cost" class="text-base font-bold text-amber-400">$100M</p>
+      </div>
+      <div class="bg-slate-800/60 rounded-lg p-3 border border-slate-700">
+       <p class="text-xs text-slate-400">Carbon</p>
+       <p id="metric-carbon" class="text-base font-bold text-rose-400">30,000t</p>
+      </div>
+      <div class="bg-slate-800/60 rounded-lg p-3 border border-slate-700">
+       <p class="text-xs text-slate-400">Electricity</p>
+       <p id="metric-electricity" class="text-base font-bold text-sky-400">40M kWh</p>
+      </div>
+      <div class="bg-slate-800/60 rounded-lg p-3 border border-slate-700">
+       <p class="text-xs text-slate-400">Patient Satisfaction</p>
+       <p id="metric-patient" class="text-base font-bold text-purple-400">80</p>
+      </div>
+      <div class="bg-slate-800/60 rounded-lg p-3 border border-slate-700">
+       <p class="text-xs text-slate-400">Employee Engagement</p>
+       <p id="metric-employee" class="text-base font-bold text-blue-400">80</p>
+      </div>
+      <div class="bg-slate-800/60 rounded-lg p-3 border border-slate-700">
+       <p class="text-xs text-slate-400">Hospital Rating</p>
+       <p id="metric-rating" class="text-base font-bold text-yellow-400">3.0/5</p>
+      </div>
+     </div>
+    </div><!-- Game Content -->
+    <div id="game-content" class="flex-1 overflow-y-auto p-6">
+     <div class="max-w-7xl mx-auto">
+      <!-- Decision Phase -->
+      <div id="decision-phase">
+       <!-- Initiative Selection -->
+       <div class="mb-8">
+        <div class="flex items-center justify-between mb-6">
+         <div>
+          <h2 class="text-2xl font-bold text-emerald-400 mb-2">🎯 Select 4 Initiatives</h2>
+          <p class="text-slate-400">Choose sustainability initiatives for your hospital</p>
+         </div>
+         <div class="text-right bg-gradient-to-r from-emerald-900/40 to-teal-900/40 rounded-lg p-4 border border-emerald-600/50">
+          <p class="text-xs text-slate-400 mb-1">Initiatives Selected</p>
+          <p class="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent"><span id="selection-count">0</span><span class="text-slate-400">/4</span></p>
+         </div>
+        </div><!-- Categories -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+         <div class="bg-slate-800/40 rounded-2xl p-6 border border-slate-700/50">
+          <h3 class="text-emerald-400 font-bold mb-4 flex items-center gap-2">🏛️ Leadership &amp; Governance</h3>
+          <div class="space-y-3" id="leadership-decisions"></div>
+         </div>
+         <div class="bg-slate-800/40 rounded-2xl p-6 border border-slate-700/50">
+          <h3 class="text-sky-400 font-bold mb-4 flex items-center gap-2">🏥 Clinical Practices</h3>
+          <div class="space-y-3" id="clinical-decisions"></div>
+         </div>
+         <div class="bg-slate-800/40 rounded-2xl p-6 border border-slate-700/50">
+          <h3 class="text-amber-400 font-bold mb-4 flex items-center gap-2">⚙️ Operations</h3>
+          <div class="space-y-3" id="operations-decisions"></div>
+         </div>
+         <div class="bg-slate-800/40 rounded-2xl p-6 border border-slate-700/50">
+          <h3 class="text-rose-400 font-bold mb-4 flex items-center gap-2">📦 Supply Chain</h3>
+          <div class="space-y-3" id="supply-decisions"></div>
+         </div>
+        </div>
+       </div><!-- Training Budget -->
+       <div class="bg-slate-800/40 rounded-2xl p-6 border border-slate-700/50 mb-8">
+        <h2 class="text-2xl font-bold text-emerald-400 mb-6">💼 Staff Training Budget</h2>
+        <p class="text-slate-400 mb-4">Invest in staff training for climate change awareness (2,000 employees)</p>
+        <div class="space-y-4">
+         <div>
+          <div class="flex justify-between mb-2">
+           <span class="text-slate-300">Budget: <span id="budget-display" class="font-bold text-emerald-400">$0</span></span> <span class="text-sm text-slate-400">Per employee: <span id="per-employee" class="font-bold">$0</span></span>
+          </div><input type="range" id="training-slider" min="0" max="500000" step="25000" value="0" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+         </div><!-- Quick Buttons -->
+         <div class="grid grid-cols-5 gap-2">
+          <button class="px-3 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-sm font-medium transition">$0</button> <button class="px-3 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-sm font-medium transition">$125K</button> <button class="px-3 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-sm font-medium transition">$250K</button> <button class="px-3 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-sm font-medium transition">$375K</button> <button class="px-3 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-sm font-medium transition">$500K</button>
+         </div>
+        </div>
+       </div><!-- Confirm Button -->
+       <div class="text-center mb-8">
+        <button class="px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 rounded-xl font-bold text-white shadow-lg shadow-emerald-500/25 transition-all text-lg"> Complete Year &amp; See Results → </button>
+       </div>
+      </div><!-- Results Phase -->
+      <div id="results-phase" class="hidden pb-8">
+       <!-- Year Summary -->
+       <div class="mb-8">
+        <h2 class="text-3xl font-bold text-emerald-400 mb-6">📊 Year <span id="result-year">1</span> Results</h2><!-- Training Feedback (Results Only) -->
+        <div id="year-training-feedback" class="bg-blue-900/30 border border-blue-700/50 rounded-2xl p-6 mb-6 text-sm"></div><!-- Initiative Feedback (4 items) -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6" id="initiative-feedback-container"></div><!-- Events -->
+        <div id="events-container" class="mb-6"></div>
+       </div><!-- Charts -->
+       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div class="bg-slate-800/60 rounded-2xl p-6 border border-slate-700">
+         <h4 class="text-amber-400 font-bold mb-4">Operating Costs ($M)</h4>
+         <div style="position: relative; height: 200px;">
+          <canvas id="chart-cost"></canvas>
+         </div>
+        </div>
+        <div class="bg-slate-800/60 rounded-2xl p-6 border border-slate-700">
+         <h4 class="text-rose-400 font-bold mb-4">Carbon Emissions (tonnes)</h4>
+         <div style="position: relative; height: 200px;">
+          <canvas id="chart-carbon"></canvas>
+         </div>
+        </div>
+        <div class="bg-slate-800/60 rounded-2xl p-6 border border-slate-700">
+         <h4 class="text-sky-400 font-bold mb-4">Electricity (M kWh)</h4>
+         <div style="position: relative; height: 200px;">
+          <canvas id="chart-electricity"></canvas>
+         </div>
+        </div>
+       </div><!-- Other Metrics Charts -->
+       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div class="bg-slate-800/60 rounded-2xl p-6 border border-slate-700">
+         <h4 class="text-purple-400 font-bold mb-4">Patient Satisfaction</h4>
+         <div style="position: relative; height: 200px;">
+          <canvas id="chart-patient"></canvas>
+         </div>
+        </div>
+        <div class="bg-slate-800/60 rounded-2xl p-6 border border-slate-700">
+         <h4 class="text-blue-400 font-bold mb-4">Employee Engagement</h4>
+         <div style="position: relative; height: 200px;">
+          <canvas id="chart-employee"></canvas>
+         </div>
+        </div>
+        <div class="bg-slate-800/60 rounded-2xl p-6 border border-slate-700">
+         <h4 class="text-yellow-400 font-bold mb-4">Hospital Rating</h4>
+         <div style="position: relative; height: 200px;">
+          <canvas id="chart-rating"></canvas>
+         </div>
+        </div>
+       </div><!-- Action Buttons -->
+       <div class="text-center" id="action-buttons">
+        <button class="px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 rounded-xl font-bold text-white shadow-lg shadow-emerald-500/25 transition-all text-lg"> Continue to Year <span id="next-year-num">2</span> → </button>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+  
+ </body>
+</html>
